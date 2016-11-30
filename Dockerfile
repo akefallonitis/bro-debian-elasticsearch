@@ -82,8 +82,8 @@ RUN cd /usr/local/bro/share/bro/  \
 
 #Critical Stack
 
-RUN wget https://intel.criticalstack.com/client/critical-stack-intel-amd64.deb \
-&& dpkg -i critical-stack-intel-arm.deb \
+RUN curl --silent https://packagecloud.io/install/repositories/criticalstack/critical-stack-intel/script.deb.sh | bash \
+&& apt-get install critical-stack-intel \
 && critical-stack-intel api e9738524-80c0-4d47-7c8a-f1eb1300a3ef
 
 # add bro-scripts
