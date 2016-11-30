@@ -82,8 +82,7 @@ RUN cd /usr/local/bro/share/bro/  \
 
 #Critical Stack
 
-RUN wget https://packagecloud.io/install/repositories/criticalstack/critical-stack-intel/script.deb.sh
-RUN ./script.deb.sh
+RUN /scripts/script.deb.sh
 RUN apt-get install critical-stack-intel
 RUN critical-stack-intel api e9738524-80c0-4d47-7c8a-f1eb1300a3ef
 
