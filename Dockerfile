@@ -1,6 +1,6 @@
 FROM danielguerra/debian-bro-develop
 
-MAINTAINER danielguerra, https://github.com/danielguerra
+
 
 # add patches for bro to work with elasticsearch 2.0 (remove . set correct time)
 ADD /bro-patch /bro-patch
@@ -11,6 +11,7 @@ autoconf \
 install-info \
 libgoogle-perftools-dev \
 libcurl3-dev \
+curl \
 libgeoip-dev \
 libpcap-dev \
 libssl-dev \
@@ -35,7 +36,7 @@ libjemalloc1-dbg ' \
 && git clone --recursive git://git.bro.org/bro \
 && patch /tmp/bro/aux/plugins/elasticsearch/src/ElasticSearch.cc  /bro-patch/ElasticSearch.cc.patch \
 && cd /tmp/bro \
-&& ./configure --enable-broker\
+&& ./configure \
 && make \
 && make install \
 && sed -i "s/127.0.0.1/elasticsearch/g" /tmp/bro/aux/plugins/elasticsearch/scripts/init.bro \
@@ -66,32 +67,40 @@ RUN echo "@load bro-extra" >> /usr/local/bro/share/bro/base/init-default.bro
 
 # add botflex
 RUN cd /usr/local/bro/share/bro/  \
-&& git clone --recursive https://github.com/sheharbano/botflex.git botflex
-# && echo "@load botflex/detection/correlation/correlation.bro" >> base/init-default.bro
+&& git clone --recursive https://github.com/sheharbano/botflex.git botflex \
+&& echo "@load botflex/detection/correlation/correlation.bro" >> base/init-default.bro
 
 # add dr watson
 RUN cd /usr/local/bro/share/bro/  \
-&& git clone --recursive https://github.com/broala/bro-drwatson.git drwatson
-#&& echo "@load drwatson" >> base/init-default.bro
+&& git clone --recursive https://github.com/broala/bro-drwatson.git drwatson \
+&& echo "@load drwatson" >> base/init-default.bro
 
 # add shellshock
 RUN cd /usr/local/bro/share/bro/  \
 && git clone --recursive https://github.com/broala/bro-shellshock.git shellshock \
 && echo "@load shellshock" >> base/init-default.bro
 
+#Critical Stack
+
+RUN curl https://packagecloud.io/install/repositories/criticalstack/critical-stack-intel/script.deb.sh | bash \
+&& apt-get install -y critical-stack-intel \
+&& critical-stack-intel api e9738524-80c0-4d47-7c8a-f1eb1300a3ef
+
 # add bro-scripts
 RUN cd /usr/local/bro/share/bro/  \
-&& git clone --recursive https://github.com/reservoirlabs/bro-scripts.git bro-scripts
-# && echo "@load bro-scripts/clickbot" >> local.bro \
-#&& echo "@load bro-scripts/supercomputing/producer-consumer-ratio" >> local.bro \
-#&& echo "@load bro-scripts/supercomputing/protocol-stats" >> local.bro \
-#&& echo "@load bro-scripts/supercomputing/http-exe-bad-attributes" >> local.bro \
-#&& echo "@load bro-scripts/supercomputing/smtp-url" >> local.bro \
-#&& echo "@load bro-scripts/supercomputing/top-metrics" >> base/init-default.bro \
-#&& echo "@load bro-scripts/supercomputing/unique-hosts" >> base/init-default.bro \
-#&& echo "@load bro-scripts/supercomputing/unique-macs" >> base/init-default.bro\
-#&& echo "@load bro-scripts/track-dhcp/track-dhcp" >> base/init-default.bro
-
+&& git clone --recursive https://github.com/reservoirlabs/bro-scripts.git bro-scripts \
+&& echo "@load bro-scripts/clickbot" >> site/local.bro \
+&& echo "@load bro-scripts/supercomputing/producer-consumer-ratio" >> site/local.bro \
+&& echo "@load bro-scripts/supercomputing/protocol-stats" >> site/local.bro \
+&& echo "@load bro-scripts/supercomputing/http-exe-bad-attributes" >> site/local.bro \
+&& echo "@load bro-scripts/supercomputing/smtp-url" >> site/local.bro \
+&& echo "@load bro-scripts/supercomputing/top-metrics" >> base/init-default.bro \
+&& echo "@load bro-scripts/supercomputing/unique-hosts" >> base/init-default.bro \
+&& echo "@load bro-scripts/supercomputing/unique-macs" >> base/init-default.bro\
+&& echo "@load bro-scripts/track-dhcp/track-dhcp" >> base/init-default.bro \
+&& echo "@load misc/detect-traceroute" >> site/local.bro \
+&& echo "@load policy/protocols/smb" >> site/local.bro \
+&& echo "@load policy/protocols/ssl/heartbleed" >> site/local.bro
 # add bro service
 RUN echo "bro             1969/tcp                        # bro pcap feed" >> /etc/services
 
@@ -124,6 +133,7 @@ RUN sed -i "s/version: string \&log/snmp_version: string \&log/g" /usr/local/bro
 RUN sed -i "s/\$version=/\$snmp_version=/g" /usr/local/bro/share/bro/base/protocols/snmp/main.bro
 
 
+
 # bro pcap-in tcp services
 ADD /xinetd /xinetd
 
@@ -137,6 +147,6 @@ ADD /php/index.php /var/www/html/index.php
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 #create output dirs
-RUN mkdir /bro /bro/pcap /var/www/html/extract_files
+RUN mkdir /bro /bro/pcap
 
 CMD ["/role/cmd-bare"]
