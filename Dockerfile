@@ -100,6 +100,7 @@ RUN cd /usr/local/bro/share/bro/  \
 && echo "@load bro-scripts/track-dhcp/track-dhcp" >> base/init-default.bro \
 && echo "@load misc/detect-traceroute" >> site/local.bro \
 && echo "@load policy/protocols/smb" >> site/local.bro \
+&& echo "@load /opt/critical-stack/frameworks/intel" >> site/local.bro \
 && echo "@load policy/protocols/ssl/heartbleed" >> site/local.bro
 # add bro service
 RUN echo "bro             1969/tcp                        # bro pcap feed" >> /etc/services
