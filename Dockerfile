@@ -4,9 +4,12 @@ FROM danielguerra/debian-bro-develop
 
 # add patches for bro to work with elasticsearch 2.0 (remove . set correct time)
 ADD /bro-patch /bro-patch
+RUN curl https://packagecloud.io/install/repositories/criticalstack/critical-stack-intel/script.deb.sh | /bin/bash
+
 
 # build bro + tools
 RUN buildDeps='build-essential \
+critical-stack-intel \
 autoconf \
 install-info \
 libgoogle-perftools-dev \
@@ -53,7 +56,11 @@ libjemalloc1-dbg ' \
 && cd /tmp \
 && git clone --recursive https://github.com/jonschipp/mal-dnssearch.git \
 && cd /tmp/mal-dnssearch \
-&& make
+&& make \
+&& apt-get remove -y $buildDeps \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 
 # add maintance shell scripts
 ADD /scripts /scripts
@@ -79,10 +86,8 @@ RUN cd /usr/local/bro/share/bro/  \
 
 #Critical Stack
 
-RUN curl https://packagecloud.io/install/repositories/criticalstack/critical-stack-intel/script.deb.sh | /bin/bash
-RUN apt-get update
-RUN apt-get install critical-stack-intel
 RUN critical-stack-intel api e9738524-80c0-4d47-7c8a-f1eb1300a3ef
+
 RUN apt-get remove -y $buildDeps \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
