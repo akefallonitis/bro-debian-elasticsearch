@@ -5,6 +5,6 @@ service bro
         user            = root
         group           = root
         server          = /usr/local/bro/bin/bro
-        server_args	    = -r -
+        server_args	    = -C -r -
         instances       = 300
 }
