@@ -6,10 +6,9 @@ FROM danielguerra/debian-bro-develop
 ADD /bro-patch /bro-patch
 RUN curl https://packagecloud.io/install/repositories/criticalstack/critical-stack-intel/script.deb.sh | /bin/bash
 
-
+RUN apt-get update && apt-get install -y critical-stack-intel
 # build bro + tools
 RUN buildDeps='build-essential \
-critical-stack-intel \
 autoconf \
 install-info \
 libgoogle-perftools-dev \
