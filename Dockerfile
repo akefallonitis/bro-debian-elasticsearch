@@ -78,7 +78,7 @@ RUN cd /usr/local/bro/share/bro/  \
 && echo "@load shellshock" >> base/init-default.bro
 
 #Critical Stack
-RUN apt-get install -y apt-transport-https
+
 RUN curl https://packagecloud.io/install/repositories/criticalstack/critical-stack-intel/script.deb.sh | /bin/bash
 RUN apt-get update
 RUN apt-get install critical-stack-intel
