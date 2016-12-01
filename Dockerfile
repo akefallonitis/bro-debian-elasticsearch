@@ -105,6 +105,7 @@ RUN cd /usr/local/bro/share/bro/  \
 && echo "@load misc/detect-traceroute" >> site/local.bro \
 && echo "@load policy/protocols/smb" >> site/local.bro \
 && echo "@load /opt/critical-stack/frameworks/intel" >> site/local.bro \
+&& echo "@load" bro-extra/extract.bro" >> site/local.bro \
 && echo "@load policy/protocols/ssl/heartbleed" >> site/local.bro
 # add bro service
 RUN echo "bro             1969/tcp                        # bro pcap feed" >> /etc/services
