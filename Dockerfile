@@ -53,10 +53,7 @@ libjemalloc1-dbg ' \
 && cd /tmp \
 && git clone --recursive https://github.com/jonschipp/mal-dnssearch.git \
 && cd /tmp/mal-dnssearch \
-&& make \
-&& apt-get remove -y $buildDeps \
-&& apt-get clean \
-&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+&& make
 
 # add maintance shell scripts
 ADD /scripts /scripts
@@ -81,10 +78,13 @@ RUN cd /usr/local/bro/share/bro/  \
 && echo "@load shellshock" >> base/init-default.bro
 
 #Critical Stack
-RUN apt-get update && apt-get install -y apt-transport-https
+RUN apt-get install -y apt-transport-https
 RUN curl https://packagecloud.io/install/repositories/criticalstack/critical-stack-intel/script.deb.sh | /bin/bash
-RUN apt-get -y update && apt-get install critical-stack-intel
+RUN apt-get install critical-stack-intel
 RUN critical-stack-intel api e9738524-80c0-4d47-7c8a-f1eb1300a3ef
+RUN apt-get remove -y $buildDeps \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # add bro-scripts
 RUN cd /usr/local/bro/share/bro/  \
