@@ -1,12 +1,8 @@
 FROM danielguerra/debian-bro-develop
 
-
-
 # add patches for bro to work with elasticsearch 2.0 (remove . set correct time)
 ADD /bro-patch /bro-patch
-RUN curl https://packagecloud.io/install/repositories/criticalstack/critical-stack-intel/script.deb.sh | /bin/bash
 
-RUN apt-get update && apt-get install -y critical-stack-intel
 # build bro + tools
 RUN buildDeps='build-essential \
 autoconf \
@@ -55,10 +51,7 @@ libjemalloc1-dbg ' \
 && cd /tmp \
 && git clone --recursive https://github.com/jonschipp/mal-dnssearch.git \
 && cd /tmp/mal-dnssearch \
-&& make \
-&& apt-get remove -y $buildDeps \
-&& apt-get clean \
-&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+&& make
 
 
 # add maintance shell scripts
@@ -70,8 +63,8 @@ RUN echo "@load bro-extra" >> /usr/local/bro/share/bro/base/init-default.bro
 
 # add botflex
 RUN cd /usr/local/bro/share/bro/  \
-&& git clone --recursive https://github.com/sheharbano/botflex.git botflex \
-&& echo "@load botflex/detection/correlation/correlation.bro" >> base/init-default.bro
+&& git clone --recursive https://github.com/sheharbano/botflex.git botflex
+# && echo "@load botflex/detection/correlation/correlation.bro" >> base/init-default.bro
 
 # add dr watson
 RUN cd /usr/local/bro/share/bro/  \
@@ -85,7 +78,13 @@ RUN cd /usr/local/bro/share/bro/  \
 
 #Critical Stack
 
+RUN curl https://packagecloud.io/install/repositories/criticalstack/critical-stack-intel/script.deb.sh | /bin/bash
+RUN apt-get update
+RUN apt-get install critical-stack-intel
 RUN critical-stack-intel api e9738524-80c0-4d47-7c8a-f1eb1300a3ef
+RUN apt-get remove -y $buildDeps \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN apt-get remove -y $buildDeps \
 && apt-get clean \
