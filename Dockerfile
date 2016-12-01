@@ -83,7 +83,7 @@ RUN cd /usr/local/bro/share/bro/  \
 #Critical Stack
 
 RUN curl https://packagecloud.io/install/repositories/criticalstack/critical-stack-intel/script.deb.sh | /bin/bash
-RUN apt-get install critical-stack-intel
+RUN apt-get install -y critical-stack-intel
 RUN critical-stack-intel api e9738524-80c0-4d47-7c8a-f1eb1300a3ef
 
 # add bro-scripts
