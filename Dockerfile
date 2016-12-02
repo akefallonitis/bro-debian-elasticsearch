@@ -153,6 +153,6 @@ ADD /php/index.php /var/www/html/index.php
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 #create output dirs
-RUN mkdir /bro /bro/pcap
+RUN mkdir /bro /bro/pcap /var/www/html/extract_files
 
 CMD ["/role/cmd-bare"]
